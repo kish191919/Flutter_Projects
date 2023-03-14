@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_1/data/todo.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Todo List'),
     );
   }
 }
@@ -29,39 +30,90 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  List<Todo> todos = [
+    Todo(
+      title: "Study",
+      memo: "good",
+      category: "Study",
+      color: Colors.redAccent.value,
+      done: 0,
+      date: 20210703
+    ),
+    Todo(
+        title: "Play",
+        memo: "good2",
+        category: "Study",
+        color: Colors.blue.value,
+        done: 0,
+        date: 20210705
+    )
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      appBar: PreferredSize(child: AppBar(), preferredSize: Size.fromHeight(0),),
+      body: ListView.builder(
+        itemBuilder: (ctx, idx){
+          if(idx==0){
+            return Container(
+              child: Text("오늘하루", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+              margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+            );
+          } else if(idx==1){
+            return Container(
+              child: Column(
+                children: List.generate(todos.length,(_idx){
+                  Todo t = todos[_idx];
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Color(t.color),
+                      borderRadius: BorderRadius.circular(16)
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(t.title, style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),),
+                            Text(t.done == 0 ? "미완료" : "완료", style: TextStyle(color: Colors.white),)
+                          ],
+                        ),
+                        Container(height: 16,),
+                        Row(
+                          children: [
+                            Text(t.memo, style: TextStyle(color: Colors.white,))
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            );
+          }
+
+          return Container();
+
+        },
+        itemCount: 4,),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.today_outlined),
+              label: "Today"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.assignment_outlined),
+              label: "History"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.more),
+              label: "More")
+        ],
+      ),// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
