@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_1/data/todo.dart';
+import 'package:todo_1/data/util.dart';
+import 'package:todo_1/write.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,47 +32,70 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   List<Todo> todos = [
     Todo(
-      title: "Study",
-      memo: "good",
-      category: "Study",
-      color: Colors.redAccent.value,
-      done: 0,
-      date: 20210703
-    ),
+        title: "Study",
+        memo: "good",
+        category: "Study",
+        color: Colors.redAccent.value,
+        done: 0,
+        date: 20210703),
     Todo(
         title: "Play",
         memo: "good2",
         category: "Study",
         color: Colors.blue.value,
-        done: 0,
-        date: 20210705
-    )
+        done: 1,
+        date: 20210705)
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(child: AppBar(), preferredSize: Size.fromHeight(0),),
+      appBar: PreferredSize(
+        child: AppBar(),
+        preferredSize: Size.fromHeight(0),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add, color: Colors.white, ),
+        onPressed: (){
+          //화면이동
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (ctx) => TodoWritePage(todo: Todo(
+              title: "",
+              color: 0,
+              memo: "",
+              done:0,
+              category: "",
+              date: Utils.getFormatTime(DateTime.now())
+            ),))
+          );
+          
+        },
+      ),
       body: ListView.builder(
-        itemBuilder: (ctx, idx){
-          if(idx==0){
+        itemBuilder: (ctx, idx) {
+          if (idx == 0) {
             return Container(
-              child: Text("오늘하루", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+              child: Text(
+                "오늘하루",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
               margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
             );
-          } else if(idx==1){
+          } else if (idx == 1) {
+            List<Todo> undone = todos.where((t){
+              return t.done==0;
+            }).toList();
+
             return Container(
               child: Column(
-                children: List.generate(todos.length,(_idx){
-                  Todo t = todos[_idx];
+                children: List.generate(undone.length, (_idx) {
+                  Todo t = undone[_idx];
                   return Container(
                     decoration: BoxDecoration(
-                      color: Color(t.color),
-                      borderRadius: BorderRadius.circular(16)
-                    ),
+                        color: Color(t.color),
+                        borderRadius: BorderRadius.circular(16)),
                     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                     margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
                     child: Column(
@@ -79,14 +104,86 @@ class _MyHomePageState extends State<MyHomePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(t.title, style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),),
-                            Text(t.done == 0 ? "미완료" : "완료", style: TextStyle(color: Colors.white),)
+                            Text(
+                              t.title,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              t.done == 0 ? "미완료" : "완료",
+                              style: TextStyle(color: Colors.white),
+                            )
                           ],
                         ),
-                        Container(height: 16,),
+                        Container(
+                          height: 16,
+                        ),
                         Row(
                           children: [
-                            Text(t.memo, style: TextStyle(color: Colors.white,))
+                            Text(t.memo,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ))
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            );
+          } else if (idx == 2) {
+            return Container(
+              child: Text(
+                "완료된 하루",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+            );
+          } else if (idx == 3) {
+            List<Todo> done = todos.where((t){
+              return t.done == 1;
+            }).toList();
+            return Container(
+              child: Column(
+                children: List.generate(done.length, (_idx) {
+                  Todo t = done[_idx];
+                  return Container(
+                    decoration: BoxDecoration(
+                        color: Color(t.color),
+                        borderRadius: BorderRadius.circular(16)),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              t.title,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              t.done == 0 ? "미완료" : "완료",
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
+                        ),
+                        Container(
+                          height: 16,
+                        ),
+                        Row(
+                          children: [
+                            Text(t.memo,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ))
                           ],
                         )
                       ],
@@ -98,22 +195,18 @@ class _MyHomePageState extends State<MyHomePage> {
           }
 
           return Container();
-
         },
-        itemCount: 4,),
+        itemCount: 4,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.today_outlined),
-              label: "Today"),
+              icon: Icon(Icons.today_outlined), label: "Today"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.assignment_outlined),
-              label: "History"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.more),
-              label: "More")
+              icon: Icon(Icons.assignment_outlined), label: "History"),
+          BottomNavigationBarItem(icon: Icon(Icons.more), label: "More")
         ],
-      ),// This trailing comma makes auto-formatting nicer for build methods.
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
