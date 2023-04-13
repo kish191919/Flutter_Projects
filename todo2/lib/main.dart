@@ -127,35 +127,22 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         }else if (idx==2){
           return Container(
-            child: Text("완료된 하루"),
+            child: Text("완료된 하루", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+        margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
           );
         }else if (idx==3){
           List<Todo> done = todos.where((t){
-            return t.done ==1;
-          }).toList();
+            return t.done ==1;}).toList();
           return Container(
             child: Column(
               children: List.generate(done.length, (_idx){
                 Todo t = done[_idx];
                 return Container(
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(t.title),
-                          Text(
-                            t.done == 0 ? "미완료":"완료"
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ),
-
-          );
-        }
+                  decoration: BoxDecoration(color: Color(t.color),borderRadius: BorderRadius.circular(16)),
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                child: Column(children: [Row(children:[Text(t.title), Text(t.done == 0 ? "미완료":"완료")],),],),);}
+              }
         return Container();
       },
       itemCount: 4,),

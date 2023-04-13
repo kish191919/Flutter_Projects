@@ -24,6 +24,7 @@ class TodoWritePage extends StatefulWidget{
 
 class _TodoWritePageState extends State<TodoWritePage>{
   TextEditingController nameController = TextEditingController();
+  TextEditingController memoController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +60,32 @@ class _TodoWritePageState extends State<TodoWritePage>{
                   color: Color(widget.todo.color),
                 )
               ],
+            ),
+          );
+        } else if (idx==3){
+          return Container(
+            child: Row(
+              children: [
+                Text("카테고리"),
+                Text(widget.todo.category)
+              ],
+            ),
+          );
+        } else if(idx==4){
+          return Container(
+            child: Text("메모"),
+          );
+        } else if(idx==5){
+          return Container(
+            child: TextField(
+              controller: memoController,
+              maxLines: 10,
+              minLines: 10,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black)
+                )
+              ),
             ),
           );
         }

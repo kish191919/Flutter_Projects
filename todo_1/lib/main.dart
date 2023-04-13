@@ -58,17 +58,17 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add, color: Colors.white, ),
-        onPressed: (){
+        onPressed: () {
+          print(Text("pressed"));
           //화면이동
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (ctx) => TodoWritePage(todo: Todo(
+          Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => TodoWritePage(todo: Todo(
               title: "",
               color: 0,
               memo: "",
               done:0,
               category: "",
               date: Utils.getFormatTime(DateTime.now())
-            ),))
+            )))
           );
           
         },
