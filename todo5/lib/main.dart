@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'Write.dart';
 import 'data/Todo.dart';
 
 void main() {
@@ -73,6 +74,15 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Icon(Icons.add, color: Colors.white,),
       onPressed: (){
         //화면이동
+        Todo todo = Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=>TodoWritePage(todo: Todo(
+          title: "",
+          color: 0,
+          memo: "",
+          done:0,
+          category: "",
+          date: Utils.getFormatT
+
+        ))));
       },
     ),bottomNavigationBar: BottomNavigationBar(
       items: [
