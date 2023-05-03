@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:todo6/data/utils.dart';
+import 'package:todo6/write.dart';
 
 import 'data/todo.dart';
 
@@ -25,8 +27,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
-
 
   final String title;
 
@@ -64,9 +64,16 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add, color: Colors.white,),
-        onPressed: (){},
+        onPressed: (){
         // 화면이동
-
+        Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => TodoWritePage(todo: Todo(
+          title:"",
+          color:0,
+          memo:"",
+          done: 0,
+          category: "",
+          date:Utils.getFormatTime(DateTime.now())
+        ),)));}
       ),
       body: ListView.builder(itemBuilder: (ctx, idx){
         if (idx==0) {
