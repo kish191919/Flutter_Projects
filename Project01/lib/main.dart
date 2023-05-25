@@ -30,6 +30,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  int _idx = 0;
 
   void _incrementCounter() {
     setState(() {
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
 
-        title: Text(widget.title),
+        title: Text("Project Test"),
       ),
       body: Center(
         child: Column(
@@ -64,10 +65,27 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: (){
+          print("FAB is pressed");
+        },
         tooltip: 'Increment',
         child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "home"),
+          BottomNavigationBarItem(icon: Icon(Icons.more), label: "more"),
+          BottomNavigationBarItem(icon: Icon(Icons.more), label: "more1"),
+        ],
+        onTap: (index){
+          print(index);
+          setState(() {
+            _idx = index;
+          });
+        },
+        // currentIndex: 2,
+        currentIndex: _idx,
+      ),// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
