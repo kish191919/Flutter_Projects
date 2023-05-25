@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: "하린이 숙제",
         memo: "그림그리기",
         color: Colors.red.value,
-        done: 1,
+        done: 0,
         date: 20230501
     )
   ];
