@@ -31,6 +31,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   int _idx = 0;
+  Color color=Colors.orange;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    color = Colors.brown;
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -45,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
 
-        title: Text("Project Test"),
+        title: Text(widget.title),
       ),
       body: Center(
         child: GridView.count(
@@ -56,17 +64,27 @@ class _MyHomePageState extends State<MyHomePage> {
             onTap: (){
               print("name is clicked");
             },),
-            Container(
+            InkWell(child: Container(
                 margin: EdgeInsets.all(20),
-                color: Colors.blue,
+                color: color,
                 child: Text("Danny")),
+            onTap: (){
+              setState(() {
+                color = Colors.deepPurple;
+              });
+
+
+            },),
+
             Container(
                 padding: EdgeInsets.all(20),
                 color: Colors.red,
                 child: Text("name1")),
-            GestureDetector(child: Text("Danny2"),
+            GestureDetector(child:
+            Text("Danny2"),
             onTap: (){
               print("danny2 is detected");
+              Navigator.of(context).pop();
             },),
             Container(
                 margin: EdgeInsets.all(20),
@@ -158,7 +176,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          print("FAB is pressed");
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (ctx){
+              return MyHomePage(title: "This is Newpage",);
+            })
+          );
         },
         tooltip: 'Increment',
         child: Icon(Icons.add),
