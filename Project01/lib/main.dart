@@ -49,14 +49,17 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+          children: [
+            Text("First App"),
+            Icon(Icons.add),
+            Container(
+              child: Text("I am in container"),
+              color: Colors.red,
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            TextButton(child: Text("I am Text Button!"),
+            onPressed: (){
+              print("I am pressed!");
+            },)
           ],
         ),
       ),
