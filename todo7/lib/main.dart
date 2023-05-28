@@ -117,7 +117,17 @@ class _MyHomePageState extends State<MyHomePage> {
                           t.done = 0;
                         }
                       });
-                    },);
+                    },
+                    onLongPress: ()async{
+                      Todo todo = await Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=>TodoWritePage(
+                        todo: t,
+                      )));
+                      setState(() {
+
+                      });
+
+                    },
+                    );
                   // return Text("$_idx");
                 }),
                 ),
@@ -146,6 +156,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         }
                       });
                     },
+                      onLongPress: ()async{
+                        Todo todo = await Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=>TodoWritePage(
+                            todo: t,)));
+                        setState(() {
+
+                        });
+                      },
                     );
                     // return Text("$_idx");
                   }),

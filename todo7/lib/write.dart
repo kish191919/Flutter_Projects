@@ -24,6 +24,14 @@ class _TodoWritePageState extends State<TodoWritePage>{
   TextEditingController memoController = TextEditingController();
   int colorIndex = 0;
   int ctIndex = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    nameController.text = widget.todo.title;
+    memoController.text = widget.todo.memo;
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
