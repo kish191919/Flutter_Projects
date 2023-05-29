@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:todo7/write.dart';
 
+
+import 'data/database.dart';
 import 'data/todo.dart';
 import 'data/utils.dart';
 
@@ -35,31 +37,49 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+
+  final dbHelper = DatabaseHelper.instance;
+
+  int selectIndex = 0;
+
+  List<Todo> allTodo =[];
+
   List<Todo> todos = [
-    Todo(
-      title: "study1",
-      memo: "datasicence",
-      color: Colors.red.value,
-      done: 0,
-      category: "study",
-      date: 20230511
-    ),
-    Todo(
-        title: "study2",
-        memo: "datasicence",
-        color: Colors.blue.value,
-        done: 1,
-        category: "study",
-        date: 20230511
-    ),
+    // Todo(
+    //   title: "study1",
+    //   memo: "datasicence",
+    //   color: Colors.red.value,
+    //   done: 0,
+    //   category: "study",
+    //   date: 20230511
+    // ),
+    // Todo(
+    //     title: "study2",
+    //     memo: "datasicence",
+    //     color: Colors.blue.value,
+    //     done: 1,
+    //     category: "study",
+    //     date: 20230511
+    // ),
   ];
 
-
-  void _incrementCounter() {
+  void getTodayTodo() async{
+    todos = await dbHelper.getTodoByDate(Utils.getFormatTime(DateTime.now()));
     setState(() {
-      _counter++;
     });
+  }
+
+  void getAllTodo() async{
+    allTodo = await dbHelper.getAllTodo();
+    setState(() {
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    getTodayTodo();
+    super.initState();
   }
 
   @override
@@ -80,110 +100,133 @@ class _MyHomePageState extends State<MyHomePage> {
               done: 0,
               category: "",
               date: Utils.getFormatTime(DateTime.now())
+                //date: Utils.getFormatTime(DateTime.now().subtract(Duration(days: 1)))
             ),
-
-
           )));
 
-         setState(() {
-           todos.add(todo);
-         });
-
-
+         getTodayTodo();
 
         },
       ),
-      body: ListView.builder(
-          itemBuilder: (ctx, idx){
-            if (idx ==0){
-              return Container(
-                child: Text("오늘하루", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-              );
-            } else if(idx==1){
-              List<Todo> undone = todos.where((t){
-                return t.done == 0;
-              }).toList();
-              return Container(
-                child: Column(
-                  children : List.generate(undone.length, (_idx){
-                    Todo t = undone[_idx];
-                    return InkWell(child: TodoCardWidget(t: t),
-                    onTap: (){
-                      setState(() {
-                        if(t.done ==0){
-                          t.done = 1;
-                        }else{
-                          t.done = 0;
-                        }
-                      });
-                    },
-                    onLongPress: ()async{
-                      Todo todo = await Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=>TodoWritePage(
-                        todo: t,
-                      )));
-                      setState(() {
-
-                      });
-
-                    },
-                    );
-                  // return Text("$_idx");
-                }),
-                ),
-              );
-            } else if (idx ==2){
-              return Container(
-                child: Text("완료된 하루", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-              );
-            } else if(idx==3){
-              List<Todo> done = todos.where((t){
-                return t.done == 1;
-              }).toList();
-
-              return Container(
-                child: Column(
-                  children : List.generate(done.length, (_idx){
-                    Todo t = done[_idx];
-                    return InkWell(child: TodoCardWidget(t: t),
-                    onTap: (){
-                      setState(() {
-                        if(t.done==0){
-                          t.done = 1;
-                        }else{
-                          t.done = 0;
-                        }
-                      });
-                    },
-                      onLongPress: ()async{
-                        Todo todo = await Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=>TodoWritePage(
-                            todo: t,)));
-                        setState(() {
-
-                        });
-                      },
-                    );
-                    // return Text("$_idx");
-                  }),
-                ),
-              );
-            }
-
-            return Container();
-
-          },
-        itemCount: 4,
-      ),
+      body: getPage(),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.today_outlined), label: "Today"),
           BottomNavigationBarItem(icon: Icon(Icons.assignment_outlined), label: "Record"),
           BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "More")
         ],
+        currentIndex: selectIndex,
+        onTap: (idx){
+          if (idx==1){
+            getAllTodo();
+          }
+          setState(() {
+            selectIndex = idx;
+          });
+        },
         
       ),// This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  Widget getPage(){
+    if (selectIndex ==0){
+      return getMain();
+    } else {
+      return getHistory();
+    }
+  }
+
+  Widget getMain(){
+    return ListView.builder(
+      itemBuilder: (ctx, idx){
+        if (idx ==0){
+          return Container(
+            child: Text("오늘하루", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+          );
+        } else if(idx==1){
+          List<Todo> undone = todos.where((t){
+            return t.done == 0;
+          }).toList();
+          return Container(
+            child: Column(
+              children : List.generate(undone.length, (_idx){
+                Todo t = undone[_idx];
+                return InkWell(child: TodoCardWidget(t: t),
+                  onTap: () async{
+                    setState(() {
+                      if(t.done ==0){
+                        t.done = 1;
+                      }else{
+                        t.done = 0;
+                      }
+                    });
+                    await dbHelper.insertTodo(t);
+
+                  },
+                  onLongPress: ()async{
+                    Todo todo = await Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=>TodoWritePage(
+                      todo: t,)));
+                    setState(() {
+                    });
+                  },
+                );
+                // return Text("$_idx");
+              }),
+            ),
+          );
+        } else if (idx ==2){
+          return Container(
+            child: Text("완료된 하루", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+          );
+        } else if(idx==3){
+          List<Todo> done = todos.where((t){
+            return t.done == 1;
+          }).toList();
+
+          return Container(
+            child: Column(
+              children : List.generate(done.length, (_idx){
+                Todo t = done[_idx];
+                return InkWell(child: TodoCardWidget(t: t),
+                  onTap: () async{
+                    setState(() {
+                      if(t.done==0){
+                        t.done = 1;
+                      }else{
+                        t.done = 0;
+                      }
+                    });
+                    await dbHelper.insertTodo(t);
+                  },
+                  onLongPress: ()async{
+                    getTodayTodo();
+                  },
+                );
+                // return Text("$_idx");
+              }),
+            ),
+          );
+        }
+
+        return Container();
+      },
+      itemCount: 4,
+    );
+
+
+
+  }
+
+  Widget getHistory(){
+    return ListView.builder(
+        itemBuilder: (ctx, idx){
+          return TodoCardWidget(t: allTodo[idx]);
+        },
+    itemCount: allTodo.length,);
+
   }
 }
 
@@ -195,6 +238,10 @@ class TodoCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    int now = Utils.getFormatTime(DateTime.now());
+    DateTime time = Utils.numToDateTime(t.date);
+
     // TODO: implement build
     return Container(
       decoration: BoxDecoration(
@@ -214,7 +261,8 @@ class TodoCardWidget extends StatelessWidget {
             ],
           ),
           Container(height: 8,),
-          Text(t.memo, style: TextStyle(color: Colors.white))
+          Text(t.memo, style: TextStyle(color: Colors.white)),
+          now == t.date ? Container() : Text("${time.month}월 ${time.day}일", style: TextStyle(color: Colors.white))
         ],
       ),
     );

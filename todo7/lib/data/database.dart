@@ -1,11 +1,12 @@
+
 import 'package:sqflite/sqflite.dart';
 import 'package:todo7/data/todo.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper{
-  static final _databaseName = "todo.db";
+  static final _databaseName = "todo7.db";
   static final _databaseVersion = 1;
-  static final todoTable = "todo";
+  static final todoTable = "todo7";
 
   DatabaseHelper._privateConstructor();
 
