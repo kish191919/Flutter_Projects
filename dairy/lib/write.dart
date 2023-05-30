@@ -59,6 +59,9 @@ class _DairyWritePageState extends State<DairyWritePage>{
               child: Text("저장", style: TextStyle(color: Colors.white),),
             onPressed: () async{
 
+                widget.dairy.title = nameController.text;
+                widget.dairy.memo = memoController.text;
+
                await dbHelper.insertDairy(widget.dairy);
                Navigator.of(context).pop();
 
