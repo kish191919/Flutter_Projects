@@ -1,5 +1,9 @@
+import 'package:dairy/data/dairy.dart';
+import 'package:dairy/write.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'data/utils.dart';
 
 void main() {
   runApp(MyApp());
@@ -37,7 +41,17 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(),
       body: Container(child: getPage(),),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
+        onPressed: () async{
+          
+          await Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => DairyWritePage(dairy:
+          Dairy(
+            date: Utils.getFormatTime(DateTime.now()),
+            title: "",
+            memo: "",
+            status: 0,
+            image: "assets/img/b2.jpg",
+
+          ))));
 
         },
         child: Icon(Icons.add),
