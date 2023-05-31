@@ -1,10 +1,10 @@
-import 'package:dairy/data/dairy.dart';
-import 'package:dairy/write.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import 'data/database.dart';
+import 'data/diary.dart';
 import 'data/utils.dart';
+import 'write.dart';
 
 void main() {
   runApp(MyApp());
@@ -36,7 +36,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int selectIndex = 0;
   final dbHelper = DatabaseHelper.instance;
-  Dairy todayDiary;
+  Diary todayDiary;
+  Diary historyDiary;
+  DateTime time = DateTime.now();
+
+  CalendarController calendarController = CalendarController();
 
   List<String> statusImg=[
     "assets/img/ico-weather.png",
@@ -45,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   void getTodayDiary()async{
-    List<Dairy> diary = await dbHelper.getDairyByDate(Utils.getFormatTime(DateTime.now()));
+    List<Diary> diary = await dbHelper.getDiaryByDate(Utils.getFormatTime(DateTime.now()));
     if(diary.isNotEmpty){
       todayDiary = diary.first;
     }
@@ -67,22 +71,41 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Container(child: getPage(),),
       floatingActionButton: FloatingActionButton(
         onPressed: () async{
-          Dairy _d;
-          if(todayDiary != null){
-            _d = todayDiary;
-          } else{
-            _d = Dairy(
-              date: Utils.getFormatTime(DateTime.now()),
-              title: "",
-              memo: "",
-              status: 0,
-              image: "assets/img/b3.jpg",
-            );
+          if(selectIndex ==0){
+            Diary _d;
+            if(todayDiary != null){
+              _d = todayDiary;
+            } else{
+              _d = Diary(
+                date: Utils.getFormatTime(DateTime.now()),
+                title: "",
+                memo: "",
+                status: 0,
+                image: "assets/img/b3.jpg",
+              );
+            }
+            await Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => DiaryWritePage(diary: _d
+            )));
+            getTodayDiary();
+          } else if(selectIndex==1){
+            Diary _d;
+            if(historyDiary != null){
+              _d = historyDiary;
+            } else{
+              _d = Diary(
+                date: Utils.getFormatTime(time),
+                title: "",
+                memo: "",
+                status: 0,
+                image: "assets/img/b3.jpg",
+              );
+            }
+            await Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => DiaryWritePage(diary: _d
+            )));
+            getDiaryByDate(time);
+
           }
 
-          await Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => DairyWritePage(dairy: _d
-          )));
-          getTodayDiary();
 
         },
         child: Icon(Icons.add),
@@ -93,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.calendar_today_rounded), label: "기록"),
           BottomNavigationBarItem(icon: Icon(Icons.insert_chart), label: "통계")
         ],
+        currentIndex: selectIndex,
         onTap: (idx){
           setState(() {
             selectIndex = idx;
@@ -158,8 +182,75 @@ class _MyHomePageState extends State<MyHomePage> {
       ) );
   }
 
+  void getDiaryByDate(DateTime date)async{
+    List<Diary> d = await dbHelper.getDiaryByDate(Utils.getFormatTime(date));
+    setState(() {
+      if (d.isEmpty){
+        historyDiary = null;
+      } else{
+        historyDiary = d.first;
+      }
+    });
+  }
+
   Widget getHistoryPage(){
-    return Container();
+    return Container(
+      child: ListView.builder(itemBuilder: (ctx, idx){
+            if (idx==0){
+              return Container(
+                child: TableCalendar(
+                  calendarController: calendarController,
+                  onDaySelected: (date, events,holidays) {
+                    print(date);
+                    time=date;
+                    getDiaryByDate(date);
+                  },
+                ),
+
+              );
+            } else if(idx==1){
+              if(historyDiary == null){
+                return Container();
+              }
+              return Container(
+                child: Column(
+                  children: [
+                    Container(child:
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("${time.month}.${time.day}",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,
+                              color: Colors.black),),
+                        Image.asset(statusImg[historyDiary.status], fit: BoxFit.contain,)
+                      ],
+                    ),
+                      margin: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                    ),
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                      decoration: BoxDecoration(
+                          color: Colors.white54,
+                          borderRadius: BorderRadius.circular(16)
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(historyDiary.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                          Container(height: 12,),
+                          Text(historyDiary.memo, style: TextStyle(fontSize: 18),),
+                          Image.asset(historyDiary.image, fit: BoxFit.cover,)
+                        ],
+                      ),
+                    ),
+                  ],
+                ));
+              }
+            return Container();
+          },
+      itemCount: 2,),
+    );
   }
 
   Widget getChartPage(){

@@ -3,25 +3,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'data/dairy.dart';
+import 'data/diary.dart';
 import 'data/database.dart';
 
-class DairyWritePage extends StatefulWidget{
+class DiaryWritePage extends StatefulWidget{
 
-  final Dairy dairy;
-  DairyWritePage({Key key, this.dairy}) : super(key: key);
+  final Diary diary;
+  DiaryWritePage({Key key, this.diary}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
 
-    return _DairyWritePageState();
+    return _DiaryWritePageState();
 
   }
 
 }
 
-class _DairyWritePageState extends State<DairyWritePage>{
+class _DiaryWritePageState extends State<DiaryWritePage>{
   int imgIndex = 0;
   TextEditingController nameController = TextEditingController();
   TextEditingController memoController = TextEditingController();
@@ -45,8 +45,8 @@ class _DairyWritePageState extends State<DairyWritePage>{
   void initState() {
     // TODO: implement initState
     super.initState();
-    nameController.text = widget.dairy.title;
-    memoController.text = widget.dairy.memo;
+    nameController.text = widget.diary.title;
+    memoController.text = widget.diary.memo;
 
   }
 
@@ -59,10 +59,10 @@ class _DairyWritePageState extends State<DairyWritePage>{
               child: Text("저장", style: TextStyle(color: Colors.white),),
             onPressed: () async{
 
-                widget.dairy.title = nameController.text;
-                widget.dairy.memo = memoController.text;
+                widget.diary.title = nameController.text;
+                widget.diary.memo = memoController.text;
 
-               await dbHelper.insertDairy(widget.dairy);
+               await dbHelper.insertDiary(widget.diary);
                Navigator.of(context).pop();
 
             },)
@@ -75,11 +75,11 @@ class _DairyWritePageState extends State<DairyWritePage>{
             height: 100,
             width: 100,
 
-            child: Image.asset(widget.dairy.image, fit: BoxFit.cover,),
+            child: Image.asset(widget.diary.image, fit: BoxFit.cover,),
           ),
           onTap: (){
             setState(() {
-              widget.dairy.image = images[imgIndex];
+              widget.diary.image = images[imgIndex];
               imgIndex++;
               imgIndex = imgIndex % images.length;
             });
@@ -96,13 +96,13 @@ class _DairyWritePageState extends State<DairyWritePage>{
                   child: Image.asset(statusImg[_idx], fit: BoxFit.contain,),
                   padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    border: Border.all(color: _idx == widget.dairy.status ? Colors.blue : Colors.transparent),
+                    border: Border.all(color: _idx == widget.diary.status ? Colors.blue : Colors.transparent),
                     borderRadius: BorderRadius.circular(100)
                   ),
                 ),
                   onTap: (){
                   setState(() {
-                    widget.dairy.status = _idx;
+                    widget.diary.status = _idx;
                   });
 
                 });

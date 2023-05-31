@@ -1,12 +1,12 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-import 'dairy.dart';
+import 'diary.dart';
 
 class DatabaseHelper{
-  static final _databaseName = "dairy.db";
+  static final _databaseName = "diary.db";
   static final _databaseVersion = 1;
-  static final dairyTable = "dairy";
+  static final diaryTable = "diary";
 
   DatabaseHelper._privateConstructor();
 
@@ -28,7 +28,7 @@ class DatabaseHelper{
 
   Future _onCreate(Database db, int version) async{
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS $dairyTable (
+      CREATE TABLE IF NOT EXISTS $diaryTable (
       date INTEGER DEFAULT 0,
       title String,
       memo String,
@@ -38,46 +38,46 @@ class DatabaseHelper{
   }
 
   Future _onUpgrade(Database db, int oldVersion, int newVersion) async{}
-  // dairy 입력, 수정, 불러오
+  // diary 입력, 수정, 불러오
 
-  Future<int> insertDairy(Dairy dairy) async{
+  Future<int> insertDiary(Diary diary) async{
     Database db = await instance.database;
 
-    List<Dairy> d = await getDairyByDate(dairy.date);
+    List<Diary> d = await getDiaryByDate(diary.date);
 
     if(d.isEmpty){
       // 새로 추가
       Map<String, dynamic> row={
-        "title":dairy.title,
-        "date": dairy.date,
-        "memo":dairy.memo,
-        "status":dairy.status,
-        "image":dairy.image
+        "title":diary.title,
+        "date": diary.date,
+        "memo":diary.memo,
+        "status":diary.status,
+        "image":diary.image
       };
 
       // return await db.close();
-      // return await db.execute('''drop table dairy''');
-      return await db.insert(dairyTable, row);
+      // return await db.execute('''drop table diary''');
+      return await db.insert(diaryTable, row);
     }else{
       Map<String, dynamic> row={
-        "title":dairy.title,
-        "date": dairy.date,
-        "memo":dairy.memo,
-        "status":dairy.status,
-        "image":dairy.image
+        "title":diary.title,
+        "date": diary.date,
+        "memo":diary.memo,
+        "status":diary.status,
+        "image":diary.image
       };
-      return await db.update(dairyTable, row, where: "date = ?", whereArgs: [dairy.date] );
+      return await db.update(diaryTable, row, where: "date = ?", whereArgs: [diary.date] );
     }
   }
 
-  Future<List<Dairy>> getAllDairy() async{
+  Future<List<Diary>> getAllDiary() async{
     Database db = await instance.database;
-    List<Dairy> dairys = [];
+    List<Diary> diarys = [];
 
-    var queries = await db.query(dairyTable);
+    var queries = await db.query(diaryTable);
 
     for (var q in queries){
-      dairys.add(Dairy(
+      diarys.add(Diary(
           title: q["title"],
           date: q["date"],
           memo: q["memo"],
@@ -86,24 +86,26 @@ class DatabaseHelper{
       ));
     }
 
-    return dairys;
+    return diarys;
   }
 
-  Future<List<Dairy>> getDairyByDate(int date) async{
+  Future<List<Diary>> getDiaryByDate(int date) async {
     Database db = await instance.database;
-    List<Dairy> dairys = [];
+    List<Diary> diarys = [];
 
-    var queries = await db.query(dairyTable, where: "date = ?", whereArgs: [date]);
-    for (var q in queries){
-      dairys.add(Dairy(
-          title: q["title"],
-          date: q["date"],
-          memo: q["memo"],
-          status: q["status"],
-          image: q["image"]
+    var queries = await db.query(diaryTable, where: "date = ?", whereArgs: [date]);
+
+    for(var q in queries){
+      diarys.add(Diary(
+        title: q["title"],
+        date: q["date"],
+        image: q["image"],
+        status: q["status"],
+        memo: q["memo"],
       ));
     }
-    return dairys;
+
+    return diarys;
   }
 
 }
